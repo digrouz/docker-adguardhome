@@ -1,0 +1,57 @@
+FROM digrouz/alpine-s6:latest
+
+ARG ADGUARDHOME_VERSION='0.107.38'
+
+LABEL maintainer "DI GREGORIO Nicolas <nicolas.digregorio@gmail.com>"
+
+### Environment variables
+ENV LANG='en_US.UTF-8' \
+    LANGUAGE='en_US.UTF-8' \
+    ADGUARDHOME_VERSION="${ADGUARDHOME_VERSION}"
+
+# Copy config files
+COPY root/ /
+
+### Install Application
+RUN set -x && \
+    apk --no-cache upgrade && \
+    apk add --no-cache --virtual=build-deps \
+      curl \
+    && \
+    apk add --no-cache --virtual=run-deps \
+      ca-certificates \
+      libcap \
+      tzdata \
+    && \
+    curl -SsL https://github.com/AdguardTeam/AdGuardHome/releases/download/v${ADGUARDHOME_VERSION}/AdGuardHome_linux_amd64.tar.gz -o /tmp/AdGuardHome.tar.gz && \
+    tar xzf /tmp/AdGuardHome.tar.gz -C /opt && \
+    cd /opt/AdGuardHome && \
+    setcap 'cap_net_bind_service=+eip' /opt/AdGuardHome/AdGuardHome && \
+    apk del --no-cache --purge \
+      build-deps  \
+    && \
+    chown -R appuser:appuser /opt/AdGuardHome && \
+    chmod -R u+rwx,g+rwx,o=rx /opt/AdGuardHome && \
+    rm -rf /opt/AdGuardHome/{AdGuardHome.sig,CHANGELOG.md,LICENSE.txt,README.md} \
+           /tmp/* \
+           /var/cache/apk/*  \
+           /var/tmp/*
+
+### Volume
+VOLUME ["/config"]
+
+### Expose ports
+EXPOSE 53/tcp
+EXPOSE 53/udp
+EXPOSE 67/udp
+EXPOSE 68/udp
+EXPOSE 80/tcp
+EXPOSE 443/tcp
+EXPOSE 443/udp
+EXPOSE 853/tcp
+EXPOSE 853/udp
+EXPOSE 3000/tcp
+EXPOSE 3000/udp
+EXPOSE 5443/tcp
+EXPOSE 5443/udp
+EXPOSE 6060/tcp
