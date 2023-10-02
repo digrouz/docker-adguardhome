@@ -26,14 +26,18 @@ RUN set -x && \
     curl -SsL https://github.com/AdguardTeam/AdGuardHome/releases/download/v${ADGUARDHOME_VERSION}/AdGuardHome_linux_amd64.tar.gz -o /tmp/AdGuardHome.tar.gz && \
     tar xzf /tmp/AdGuardHome.tar.gz -C /opt && \
     cd /opt/AdGuardHome && \
-    mkdir -p /opt/AdGuardHome/{conf,work} && \
+    mkdir -p /opt/AdGuardHome/conf && \
+    mkdir -p /opt/AdGuardHome/work && \
     setcap 'cap_net_bind_service=+eip' /opt/AdGuardHome/AdGuardHome && \
     apk del --no-cache --purge \
       build-deps  \
     && \
     chown -R appuser:appuser /opt/AdGuardHome && \
     chmod -R u+rwx,g+rwx,o=rx /opt/AdGuardHome && \
-    rm -rf /opt/AdGuardHome/{AdGuardHome.sig,CHANGELOG.md,LICENSE.txt,README.md} \
+    rm -rf /opt/AdGuardHome/AdGuardHome.sig \
+           /opt/AdGuardHome/CHANGELOG.md \
+           /opt/AdGuardHome/LICENSE.txt \
+           /opt/AdGuardHome/README.md \
            /tmp/* \
            /var/cache/apk/*  \
            /var/tmp/*
