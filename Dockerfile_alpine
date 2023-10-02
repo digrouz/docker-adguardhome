@@ -1,13 +1,15 @@
 FROM digrouz/alpine-s6:latest
 
 ARG ADGUARDHOME_VERSION='0.107.38'
+ARG ADGUARDHOME_ARCH='amd64'
 
 LABEL maintainer "DI GREGORIO Nicolas <nicolas.digregorio@gmail.com>"
 
 ### Environment variables
 ENV LANG='en_US.UTF-8' \
     LANGUAGE='en_US.UTF-8' \
-    ADGUARDHOME_VERSION="${ADGUARDHOME_VERSION}"
+    ADGUARDHOME_VERSION="${ADGUARDHOME_VERSION}"\
+    ADGUARDHOME_ARCH="${ADGUARDHOME_ARCH}"
 
 # Copy config files
 COPY root/ /
@@ -23,7 +25,7 @@ RUN set -x && \
       libcap \
       tzdata \
     && \
-    curl -SsL https://github.com/AdguardTeam/AdGuardHome/releases/download/v${ADGUARDHOME_VERSION}/AdGuardHome_linux_amd64.tar.gz -o /tmp/AdGuardHome.tar.gz && \
+    curl -SsL https://github.com/AdguardTeam/AdGuardHome/releases/download/v${ADGUARDHOME_VERSION}/AdGuardHome_linux_${ADGUARDHOME_ARCH}.tar.gz -o /tmp/AdGuardHome.tar.gz && \
     tar xzf /tmp/AdGuardHome.tar.gz -C /opt && \
     cd /opt/AdGuardHome && \
     mkdir -p /opt/AdGuardHome/conf && \
@@ -32,7 +34,7 @@ RUN set -x && \
     apk del --no-cache --purge \
       build-deps  \
     && \
-    chown -R appuser:appuser /opt/AdGuardHome && \
+    chown -R root:appuser /opt/AdGuardHome && \
     chmod -R u+rwx,g+rwx,o=rx /opt/AdGuardHome && \
     rm -rf /opt/AdGuardHome/AdGuardHome.sig \
            /opt/AdGuardHome/CHANGELOG.md \
@@ -43,7 +45,7 @@ RUN set -x && \
            /var/tmp/*
 
 ### Volume
-VOLUME ["/config"]
+VOLUME ["/opt/AdGuardHome/conf","/opt/AdGuardHome/work"]
 
 ### Expose ports
 EXPOSE 53/tcp
