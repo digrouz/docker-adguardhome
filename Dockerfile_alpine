@@ -1,6 +1,6 @@
 FROM digrouz/alpine-s6:latest
 
-ARG ADGUARDHOME_VERSION='0.107.65'
+ARG ADGUARDHOME_VERSION='0.107.66'
 ARG ADGUARDHOME_ARCH='amd64'
 
 LABEL maintainer "DI GREGORIO Nicolas <nicolas.digregorio@gmail.com>"
